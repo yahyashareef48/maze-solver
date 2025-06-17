@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maze Solver - DFS Learning Project</title>
+    <script src="node_modules/p5/lib/p5.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-family: "Courier New", monospace;
+        overflow: hidden;
+      }
+
+      .info-panel {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        z-index: 1000;
+      }
+
+      .controls {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        z-index: 1000;
+      }
+
+      button {
+        background-color: #333;
+        color: white;
+        border: 1px solid #555;
+        padding: 8px 16px;
+        margin: 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      button:hover {
+        background-color: #444;
+        border-color: #666;
+      }
+
+      button:active {
+        background-color: #222;
+      }
+
+      .status {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="info-panel">
+      <h3>🧩 Maze Solver</h3>
+      <p><strong>Goal:</strong> Implement DFS algorithm</p>
+      <p><strong>Current:</strong> <span id="current-cell">-</span></p>
+      <p><strong>Target:</strong> <span id="target-cell">-</span></p>
+      <div class="status" id="status">Ready to implement DFS!</div>
+    </div>
+    <div class="controls">
+      <button onclick="toggleSolvingMode()" id="mode-btn">🎮 Manual Mode</button>
+      <button onclick="generateNewMaze()">🔄 New Maze</button>
+      <button onclick="startDFS()" id="dfs-btn">🎯 Start DFS</button>
+      <button onclick="resetMaze()">↺ Reset</button>
+      <button onclick="toggleTheme()" id="theme-btn">🌙 Dark Theme</button>
+    </div>
+
+    <script src="js/cell.js"></script>
+    <script src="js/maze.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
