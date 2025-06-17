@@ -246,10 +246,18 @@ function drawPlayer() {
  * Move player in the specified direction
  */
 function movePlayer(direction) {
-  if (!manualSolving || !playerCell || dfsRunning) return;
+  console.log(`🎮 Attempting to move ${direction}`);
+  console.log(`Current state: manualSolving=${manualSolving}, playerCell=${playerCell}, dfsRunning=${dfsRunning}`);
+
+  if (!manualSolving || !playerCell || dfsRunning) {
+    console.log("❌ Early return due to invalid state");
+    return;
+  }
 
   let targetX = playerCell.x;
   let targetY = playerCell.y;
+
+  console.log(`Current position: (${playerCell.x}, ${playerCell.y})`);
 
   // Calculate target position based on direction
   switch (direction) {
@@ -267,12 +275,21 @@ function movePlayer(direction) {
       break;
   }
 
+  console.log(`Target position: (${targetX}, ${targetY})`);
+
   // Check if the move is valid
   const targetCell = maze.getCell(targetX, targetY);
-  if (!targetCell) return; // Out of bounds
+  if (!targetCell) {
+    console.log("❌ Target cell is null (out of bounds)");
+    return;
+  }
 
+  console.log(`Target cell found: (${targetCell.x}, ${targetCell.y})`);
   // Check if there's a wall blocking the movement
-  if (!canMoveBetweenCells(playerCell, targetCell)) {
+  const canMove = playerCell.canMoveTo(targetCell);
+  console.log(`Can move using cell.canMoveTo: ${canMove}`);
+
+  if (!canMove) {
     console.log("🚫 Can't move there - wall is blocking!");
     return;
   }
@@ -305,15 +322,34 @@ function canMoveBetweenCells(from, to) {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
 
+  console.log(`Checking movement from (${from.x}, ${from.y}) to (${to.x}, ${to.y})`);
+  console.log(`dx=${dx}, dy=${dy}`);
+
   // Only allow adjacent cells
-  if (Math.abs(dx) + Math.abs(dy) !== 1) return false;
+  if (Math.abs(dx) + Math.abs(dy) !== 1) {
+    console.log("❌ Cells are not adjacent");
+    return false;
+  }
 
   // Check walls
-  if (dx === 1) return !from.walls.right; // Moving right
-  if (dx === -1) return !from.walls.left; // Moving left
-  if (dy === 1) return !from.walls.bottom; // Moving down
-  if (dy === -1) return !from.walls.top; // Moving up
+  if (dx === 1) {
+    console.log(`Moving right: from.walls.right = ${from.walls.right}`);
+    return !from.walls.right; // Moving right
+  }
+  if (dx === -1) {
+    console.log(`Moving left: from.walls.left = ${from.walls.left}`);
+    return !from.walls.left; // Moving left
+  }
+  if (dy === 1) {
+    console.log(`Moving down: from.walls.bottom = ${from.walls.bottom}`);
+    return !from.walls.bottom; // Moving down
+  }
+  if (dy === -1) {
+    console.log(`Moving up: from.walls.top = ${from.walls.top}`);
+    return !from.walls.top; // Moving up
+  }
 
+  console.log("❌ No valid direction found");
   return false;
 }
 
