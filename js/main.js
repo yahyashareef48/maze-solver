@@ -7,6 +7,7 @@ let maze;
 let cellSize = 20;
 let cols, rows;
 let isDarkTheme = true;
+let canvas; // Store canvas reference for focus management
 
 // Player variables for manual solving
 let playerCell = null;
@@ -32,7 +33,20 @@ function setup() {
   cols = Math.max(cols, 10);
   rows = Math.max(rows, 10);
 
-  createCanvas(windowWidth, windowHeight);
+  canvas = createCanvas(windowWidth, windowHeight);
+
+  // Make canvas focusable and focus it to receive keyboard events
+  canvas.elt.setAttribute("tabindex", "0");
+  canvas.elt.focus();
+
+  // Add click event to ensure canvas stays focused
+  canvas.mousePressed(() => {
+    canvas.elt.focus();
+  });
+
+  // Add document-level keyboard event listener as fallback
+  document.addEventListener("keydown", handleKeyDown);
+
   // Create initial maze
   maze = new Maze(cols, rows, cellSize);
 
@@ -419,6 +433,11 @@ function startDFS() {
  * Handle mouse clicks for interactive features
  */
 function mousePressed() {
+  // Ensure canvas has focus for keyboard events
+  if (canvas) {
+    canvas.elt.focus();
+  }
+
   // Calculate which cell was clicked
   const gridX = Math.floor(mouseX / cellSize);
   const gridY = Math.floor(mouseY / cellSize);
@@ -434,23 +453,83 @@ function mousePressed() {
 }
 
 /**
- * Keyboard shortcuts and player controls
+ * Handle document-level keyboard events (fallback for p5.js keyPressed)
  */
-function keyPressed() {
-  // Arrow keys for player movement (using keyCode for better detection)
-  if (keyCode === UP_ARROW) {
+function handleKeyDown(event) {
+  // Prevent default behavior for arrow keys and space
+  if ([32, 37, 38, 39, 40].includes(event.keyCode)) {
+    event.preventDefault();
+  }
+
+  // Arrow keys for player movement
+  if (event.keyCode === 38) {
+    // UP_ARROW
     movePlayer("UP");
     return;
   }
-  if (keyCode === DOWN_ARROW) {
+  if (event.keyCode === 40) {
+    // DOWN_ARROW
     movePlayer("DOWN");
     return;
   }
-  if (keyCode === LEFT_ARROW) {
+  if (event.keyCode === 37) {
+    // LEFT_ARROW
     movePlayer("LEFT");
     return;
   }
-  if (keyCode === RIGHT_ARROW) {
+  if (event.keyCode === 39) {
+    // RIGHT_ARROW
+    movePlayer("RIGHT");
+    return;
+  }
+
+  // Other controls
+  const key = event.key.toLowerCase();
+  switch (key) {
+    case "r":
+      resetMaze();
+      break;
+    case "n":
+      generateNewMaze();
+      break;
+    case "d":
+      startDFS();
+      break;
+    case "t":
+      toggleTheme();
+      break;
+    case "h":
+      showHelp();
+      break;
+    case " ":
+      toggleSolvingMode();
+      break;
+  }
+}
+
+/**
+ * Keyboard shortcuts and player controls
+ */
+/**
+ * Keyboard shortcuts and player controls
+ */
+function keyPressed() {
+  console.log("p5.js keyPressed called with key:", key, "keyCode:", keyCode);
+
+  // Arrow keys for player movement (using keyCode for better detection)
+  if (keyCode === 38) {
+    movePlayer("UP");
+    return;
+  }
+  if (keyCode === 40) {
+    movePlayer("DOWN");
+    return;
+  }
+  if (keyCode === 37) {
+    movePlayer("LEFT");
+    return;
+  }
+  if (keyCode === 39) {
     movePlayer("RIGHT");
     return;
   }
