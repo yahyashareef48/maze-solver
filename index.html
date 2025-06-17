@@ -24,7 +24,6 @@
         border: 1px solid #333;
         z-index: 1000;
       }
-
       .controls {
         position: fixed;
         bottom: 10px;
@@ -34,6 +33,38 @@
         border-radius: 8px;
         border: 1px solid #333;
         z-index: 1000;
+        max-width: 280px;
+      }
+
+      .size-controls {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #444;
+      }
+
+      .size-controls label {
+        display: block;
+        margin-top: 8px;
+        margin-bottom: 4px;
+        font-size: 12px;
+        color: #ccc;
+      }
+
+      .size-controls input[type="range"] {
+        width: 100%;
+        margin-bottom: 2px;
+      }
+
+      .size-controls span {
+        font-size: 11px;
+        color: #aaa;
+        margin-left: 8px;
+      }
+
+      .action-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
       }
 
       button {
@@ -67,16 +98,41 @@
     <div class="info-panel">
       <h3>🧩 Maze Solver</h3>
       <p><strong>Goal:</strong> Implement DFS algorithm</p>
+      <p><strong>Size:</strong> <span id="maze-dimensions">-</span></p>
       <p><strong>Current:</strong> <span id="current-cell">-</span></p>
       <p><strong>Target:</strong> <span id="target-cell">-</span></p>
       <div class="status" id="status">Ready to implement DFS!</div>
     </div>
     <div class="controls">
-      <button onclick="toggleSolvingMode()" id="mode-btn">🎮 Manual Mode</button>
-      <button onclick="generateNewMaze()">🔄 New Maze</button>
-      <button onclick="startDFS()" id="dfs-btn">🎯 Start DFS</button>
-      <button onclick="resetMaze()">↺ Reset</button>
-      <button onclick="toggleTheme()" id="theme-btn">🌙 Dark Theme</button>
+      <div class="size-controls">
+        <div style="margin-bottom: 10px">
+          <button onclick="setPresetSize('small')" style="font-size: 11px; padding: 4px 8px">Small</button>
+          <button onclick="setPresetSize('medium')" style="font-size: 11px; padding: 4px 8px">Medium</button>
+          <button onclick="setPresetSize('large')" style="font-size: 11px; padding: 4px 8px">Large</button>
+        </div>
+
+        <label for="cell-size">Cell Size:</label>
+        <input type="range" id="cell-size" min="10" max="40" value="20" onchange="updateCellSize(this.value)" />
+        <span id="cell-size-value">20px</span>
+
+        <label for="maze-width">Width:</label>
+        <input type="range" id="maze-width" min="10" max="80" value="40" onchange="updateMazeWidth(this.value)" />
+        <span id="maze-width-value">40</span>
+
+        <label for="maze-height">Height:</label>
+        <input type="range" id="maze-height" min="10" max="60" value="30" onchange="updateMazeHeight(this.value)" />
+        <span id="maze-height-value">30</span>
+
+        <button onclick="applySizeChanges()" style="margin-top: 8px; width: 100%">📏 Apply Size</button>
+      </div>
+
+      <div class="action-controls">
+        <button onclick="toggleSolvingMode()" id="mode-btn">🎮 Manual Mode</button>
+        <button onclick="generateNewMaze()">🔄 New Maze</button>
+        <button onclick="startDFS()" id="dfs-btn">🎯 Start DFS</button>
+        <button onclick="resetMaze()">↺ Reset</button>
+        <button onclick="toggleTheme()" id="theme-btn">🌙 Dark Theme</button>
+      </div>
     </div>
 
     <script src="js/cell.js"></script>

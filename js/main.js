@@ -9,6 +9,11 @@ let cols, rows;
 let isDarkTheme = true;
 let canvas; // Store canvas reference for focus management
 
+// Size control variables
+let customCols = 40;
+let customRows = 30;
+let useCustomSize = false;
+
 // Player variables for manual solving
 let playerCell = null;
 let manualSolving = false;
@@ -25,13 +30,11 @@ let dfsRunning = false;
  * p5.js setup function - runs once
  */
 function setup() {
-  // Calculate grid dimensions based on window size
-  cols = Math.floor((windowWidth - 200) / cellSize);
-  rows = Math.floor((windowHeight - 100) / cellSize);
+  // Initialize size controls with current values
+  initializeSizeControls();
 
-  // Ensure minimum size
-  cols = Math.max(cols, 10);
-  rows = Math.max(rows, 10);
+  // Calculate grid dimensions
+  calculateGridDimensions();
 
   canvas = createCanvas(windowWidth, windowHeight);
 
@@ -107,17 +110,30 @@ function drawDFSVisualization() {
  */
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+
+  // Update size controls if not using custom size
+  if (!useCustomSize) {
+    calculateGridDimensions();
+    updateSizeDisplay();
+    console.log(`📏 Window resized, auto-adjusted maze to ${cols}x${rows}`);
+  }
 }
 
 /**
  * Generate a new maze
  */
 function generateNewMaze() {
-  console.log("🔄 Generating new maze...");
+  console.log(`🔄 Generating new maze: ${cols}x${rows} cells, ${cellSize}px each...`);
+
+  // Ensure we have current dimensions
+  calculateGridDimensions();
+
   maze = new Maze(cols, rows, cellSize);
   resetDFS();
   initializePlayer(); // Reset player position
   updateUI();
+
+  console.log(`✅ New maze generated: ${cols} cols × ${rows} rows`);
 }
 
 /**
@@ -164,6 +180,7 @@ function toggleTheme() {
 function updateUI() {
   const startPos = `(${maze.startCell.x}, ${maze.startCell.y})`;
   const endPos = `(${maze.endCell.x}, ${maze.endCell.y})`;
+  const mazeDimensions = `${cols}×${rows} (${cellSize}px)`;
 
   // Update current position based on mode
   let currentPos;
@@ -175,6 +192,7 @@ function updateUI() {
     currentPos = startPos;
   }
 
+  document.getElementById("maze-dimensions").textContent = mazeDimensions;
   document.getElementById("current-cell").textContent = currentPos;
   document.getElementById("target-cell").textContent = endPos;
 }
@@ -518,7 +536,6 @@ function handleKeyDown(event) {
     movePlayer("RIGHT");
     return;
   }
-
   // Other controls
   const key = event.key.toLowerCase();
   switch (key) {
@@ -540,6 +557,17 @@ function handleKeyDown(event) {
     case " ":
       toggleSolvingMode();
       break;
+    case "a":
+      applySizeChanges();
+      break;
+    case "=":
+    case "+":
+      adjustCellSize(2);
+      break;
+    case "-":
+    case "_":
+      adjustCellSize(-2);
+      break;
   }
 }
 
@@ -553,8 +581,7 @@ function handleKeyDown(event) {
 function keyPressed() {
   console.log("p5.js keyPressed called with key:", key, "keyCode:", keyCode);
 
-  // Arrow keys are handled by handleKeyDown() function to avoid duplicate movement
-  // Only handle non-arrow key shortcuts here
+  // Arrow keys are handled by handleKeyDown() function to avoid duplicate movement  // Only handle non-arrow key shortcuts here
   switch (key.toLowerCase()) {
     case "r":
       resetMaze();
@@ -574,6 +601,17 @@ function keyPressed() {
     case " ":
       toggleSolvingMode();
       break;
+    case "a":
+      applySizeChanges();
+      break;
+    case "=":
+    case "+":
+      adjustCellSize(2);
+      break;
+    case "-":
+    case "_":
+      adjustCellSize(-2);
+      break;
   }
 }
 
@@ -588,13 +626,169 @@ function showHelp() {
   console.log("   N - Generate new maze");
   console.log("   D - Start DFS");
   console.log("   T - Toggle theme");
+  console.log("   A - Apply size changes");
+  console.log("   +/- - Increase/decrease cell size");
   console.log("   H - Show this help");
   console.log("");
   console.log("🎮 Manual Mode:");
   console.log("   Use arrow keys to navigate from green START to red END");
   console.log("   Yellow circle shows your current position");
   console.log("");
+  console.log("📏 Size Controls:");
+  console.log("   Use the sliders in the bottom-right panel to:");
+  console.log("   - Adjust cell size (10-40px)");
+  console.log("   - Set maze width (10-80 cells)");
+  console.log("   - Set maze height (10-60 cells)");
+  console.log("   Changes are applied when you generate a new maze");
+  console.log("");
   console.log("🎯 Your Mission:");
   console.log("   Implement DFS algorithm in the startDFS() function!");
   console.log("   Use the provided tools and follow the hints in the code.");
+}
+
+/**
+ * Initialize size control UI elements
+ */
+function initializeSizeControls() {
+  // Set initial values based on window size if not using custom size
+  if (!useCustomSize) {
+    customCols = Math.floor((windowWidth - 300) / cellSize);
+    customRows = Math.floor((windowHeight - 150) / cellSize);
+
+    // Ensure reasonable bounds
+    customCols = Math.max(Math.min(customCols, 80), 10);
+    customRows = Math.max(Math.min(customRows, 60), 10);
+  }
+
+  // Update UI elements
+  document.getElementById("cell-size").value = cellSize;
+  document.getElementById("cell-size-value").textContent = cellSize + "px";
+  document.getElementById("maze-width").value = customCols;
+  document.getElementById("maze-width-value").textContent = customCols;
+  document.getElementById("maze-height").value = customRows;
+  document.getElementById("maze-height-value").textContent = customRows;
+}
+
+/**
+ * Calculate grid dimensions based on current settings
+ */
+function calculateGridDimensions() {
+  if (useCustomSize) {
+    cols = customCols;
+    rows = customRows;
+  } else {
+    // Auto-calculate based on window size
+    cols = Math.floor((windowWidth - 300) / cellSize);
+    rows = Math.floor((windowHeight - 150) / cellSize);
+
+    // Ensure minimum size
+    cols = Math.max(cols, 10);
+    rows = Math.max(rows, 10);
+  }
+}
+
+/**
+ * Update cell size
+ */
+function updateCellSize(newSize) {
+  cellSize = parseInt(newSize);
+  document.getElementById("cell-size-value").textContent = cellSize + "px";
+
+  // Recalculate grid if not using custom size
+  if (!useCustomSize) {
+    calculateGridDimensions();
+    updateSizeDisplay();
+  }
+
+  console.log(`🔧 Cell size updated to ${cellSize}px`);
+}
+
+/**
+ * Update maze width
+ */
+function updateMazeWidth(newWidth) {
+  customCols = parseInt(newWidth);
+  document.getElementById("maze-width-value").textContent = customCols;
+  useCustomSize = true;
+  cols = customCols;
+  console.log(`🔧 Maze width updated to ${customCols} cells`);
+}
+
+/**
+ * Update maze height
+ */
+function updateMazeHeight(newHeight) {
+  customRows = parseInt(newHeight);
+  document.getElementById("maze-height-value").textContent = customRows;
+  useCustomSize = true;
+  rows = customRows;
+  console.log(`🔧 Maze height updated to ${customRows} cells`);
+}
+
+/**
+ * Update size display values
+ */
+function updateSizeDisplay() {
+  if (!useCustomSize) {
+    customCols = cols;
+    customRows = rows;
+    document.getElementById("maze-width").value = customCols;
+    document.getElementById("maze-width-value").textContent = customCols;
+    document.getElementById("maze-height").value = customRows;
+    document.getElementById("maze-height-value").textContent = customRows;
+  }
+}
+
+/**
+ * Apply current size settings and regenerate maze
+ */
+function applySizeChanges() {
+  console.log(`🔧 Applying size changes: ${cols}x${rows} cells, ${cellSize}px each`);
+
+  // Resize canvas if needed
+  resizeCanvas(windowWidth, windowHeight);
+
+  // Generate new maze with current settings
+  generateNewMaze();
+}
+
+/**
+ * Adjust cell size with keyboard shortcuts
+ */
+function adjustCellSize(delta) {
+  const newSize = Math.max(10, Math.min(40, cellSize + delta));
+  if (newSize !== cellSize) {
+    updateCellSize(newSize);
+    // Auto-apply if not using custom dimensions
+    if (!useCustomSize) {
+      applySizeChanges();
+    }
+  }
+}
+
+/**
+ * Set preset maze sizes
+ */
+function setPresetSize(preset) {
+  useCustomSize = true;
+
+  switch (preset) {
+    case "small":
+      updateCellSize(25);
+      updateMazeWidth(20);
+      updateMazeHeight(15);
+      break;
+    case "medium":
+      updateCellSize(20);
+      updateMazeWidth(40);
+      updateMazeHeight(30);
+      break;
+    case "large":
+      updateCellSize(15);
+      updateMazeWidth(60);
+      updateMazeHeight(45);
+      break;
+  }
+
+  console.log(`📏 Applied ${preset} preset: ${cols}x${rows} at ${cellSize}px`);
 }
