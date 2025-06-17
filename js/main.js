@@ -548,29 +548,13 @@ function handleKeyDown(event) {
  */
 /**
  * Keyboard shortcuts and player controls
+ * Note: Arrow key movement is handled by handleKeyDown() to avoid double-triggering
  */
 function keyPressed() {
   console.log("p5.js keyPressed called with key:", key, "keyCode:", keyCode);
 
-  // Arrow keys for player movement (using keyCode for better detection)
-  if (keyCode === 38) {
-    movePlayer("UP");
-    return;
-  }
-  if (keyCode === 40) {
-    movePlayer("DOWN");
-    return;
-  }
-  if (keyCode === 37) {
-    movePlayer("LEFT");
-    return;
-  }
-  if (keyCode === 39) {
-    movePlayer("RIGHT");
-    return;
-  }
-
-  // Other controls
+  // Arrow keys are handled by handleKeyDown() function to avoid duplicate movement
+  // Only handle non-arrow key shortcuts here
   switch (key.toLowerCase()) {
     case "r":
       resetMaze();
