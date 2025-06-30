@@ -36,6 +36,30 @@
         max-width: 280px;
       }
 
+      .gui-hidden .info-panel,
+      .gui-hidden .controls {
+        display: none;
+      }
+
+      .gui-toggle {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 1px solid #555;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        z-index: 1001;
+        font-size: 12px;
+      }
+
+      .gui-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+
       .size-controls {
         margin-bottom: 15px;
         padding-bottom: 15px;
@@ -95,6 +119,8 @@
     </style>
   </head>
   <body>
+    <button class="gui-toggle" onclick="toggleGUI()" id="gui-toggle-btn">Hide GUI (G)</button>
+
     <div class="info-panel">
       <h3>🧩 Maze Solver</h3>
       <p><strong>Goal:</strong> Implement DFS algorithm</p>

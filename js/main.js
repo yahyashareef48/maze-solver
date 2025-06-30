@@ -9,6 +9,9 @@ let cols, rows;
 let isDarkTheme = true;
 let canvas; // Store canvas reference for focus management
 
+// GUI visibility control
+let isGUIVisible = true;
+
 // Size control variables
 let customCols = 40;
 let customRows = 30;
@@ -160,6 +163,23 @@ function resetDFS() {
 
   document.getElementById("dfs-btn").textContent = "🎯 Start DFS";
   document.getElementById("status").textContent = "Ready to implement DFS!";
+}
+
+/**
+ * Toggle GUI visibility
+ */
+function toggleGUI() {
+  isGUIVisible = !isGUIVisible;
+
+  if (isGUIVisible) {
+    document.body.classList.remove("gui-hidden");
+    document.getElementById("gui-toggle-btn").textContent = "Hide GUI (G)";
+    console.log("🎨 GUI panels shown");
+  } else {
+    document.body.classList.add("gui-hidden");
+    document.getElementById("gui-toggle-btn").textContent = "Show GUI (G)";
+    console.log("🎨 GUI panels hidden");
+  }
 }
 
 /**
@@ -581,6 +601,9 @@ function handleKeyDown(event) {
     case "t":
       toggleTheme();
       break;
+    case "g":
+      toggleGUI();
+      break;
     case "h":
       showHelp();
       break;
@@ -625,6 +648,9 @@ function keyPressed() {
     case "t":
       toggleTheme();
       break;
+    case "g":
+      toggleGUI();
+      break;
     case "h":
       showHelp();
       break;
@@ -656,6 +682,7 @@ function showHelp() {
   console.log("   N - Generate new maze");
   console.log("   D - Start DFS");
   console.log("   T - Toggle theme");
+  console.log("   G - Toggle GUI visibility");
   console.log("   A - Apply size changes");
   console.log("   +/- - Increase/decrease cell size");
   console.log("   H - Show this help");
