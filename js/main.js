@@ -456,7 +456,6 @@ function startDFS() {
   console.log("   - dfsStack (use as your stack)");
 
   // Reset maze state
-  maze.resetForPathfinding();
 
   // TODO: IMPLEMENT YOUR DFS ALGORITHM HERE!
   //
@@ -477,8 +476,39 @@ function startDFS() {
     // 7. Set dfsComplete = true when finished
     */
 
-  // Placeholder - remove this when you implement DFS
-  alert("🚨 DFS not implemented yet! This is your task to complete. Check the console for hints!");
+  function dfsStep() {
+    if (currentDFSCell === maze.endCell) {
+      console.log("🎉 DFS complete! Reached the end cell:", maze.endCell);
+      maze.highlightPath();
+      dfsComplete = true;
+      dfsRunning = false;
+      document.getElementById("dfs-btn").textContent = "🎯 Start DFS";
+      document.getElementById("status").textContent = "DFS complete!";
+      updateUI();
+      return;
+    }
+
+    currentDFSCell = dfsStack.shift();
+    const neighbors = maze.getValidNeighbors(currentDFSCell);
+    for (let neighbor of neighbors) {
+      if (!neighbor.visited) {
+        neighbor.visited = true; // Mark as "been here"
+        neighbor.parent = currentDFSCell; // Remember how I got here
+        dfsStack.push(neighbor); // Add to my "to-do" stack
+      }
+    }
+
+    setTimeout(dfsStep, 0);
+  }
+
+  dfsRunning = true;
+  dfsStack = [maze.startCell];
+  maze.startCell.visited = true;
+  currentDFSCell = maze.startCell;
+  document.getElementById("dfs-btn").textContent = "🛑 Stop DFS";
+  document.getElementById("status").textContent = "DFS in progress...";
+  console.log("DFS started with initial cell:", maze.startCell);
+  dfsStep(); // Start the DFS steps
 
   updateUI();
 }
